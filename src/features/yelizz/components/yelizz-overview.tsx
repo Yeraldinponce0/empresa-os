@@ -1,3 +1,5 @@
+import Link from 'next/link';
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import type { YelizzOverviewData } from '@/features/yelizz/queries';
@@ -85,7 +87,12 @@ export function YelizzOverview({ data }: { data: YelizzOverviewData }) {
                             key={task.id}
                             className='flex items-center justify-between gap-2 text-sm'
                           >
-                            <span>{task.title}</span>
+                            <Link
+                              href={`/dashboard/yelizz/tasks/${task.id}`}
+                              className='hover:underline'
+                            >
+                              {task.title}
+                            </Link>
                             <Badge variant='outline'>{task.status}</Badge>
                           </li>
                         ))}
