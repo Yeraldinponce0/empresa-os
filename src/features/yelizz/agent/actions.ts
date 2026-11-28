@@ -32,6 +32,7 @@ export async function saveTaskInput(taskId: string, inputData: string): Promise<
     .match({ tenant_id: YELIZZ_TENANT, id: taskId });
   if (error) return { ok: false, error: error.message };
   revalidatePath(taskPath(taskId));
+  revalidatePath('/oficina');
   return { ok: true };
 }
 
@@ -128,6 +129,7 @@ export async function executeTask(taskId: string, inputData: string): Promise<Ac
     .match({ tenant_id: YELIZZ_TENANT, id: taskId });
 
   revalidatePath(taskPath(taskId));
+  revalidatePath('/oficina');
   return { ok: true };
 }
 
@@ -202,6 +204,7 @@ export async function approveTask(approvalId: string, taskId: string): Promise<A
   await db.from('tasks').update({ status: 'done' }).match({ tenant_id: YELIZZ_TENANT, id: taskId });
 
   revalidatePath(taskPath(taskId));
+  revalidatePath('/oficina');
   return { ok: true };
 }
 
@@ -234,5 +237,6 @@ export async function rejectTask(
     .match({ tenant_id: YELIZZ_TENANT, id: taskId });
 
   revalidatePath(taskPath(taskId));
+  revalidatePath('/oficina');
   return { ok: true };
 }
