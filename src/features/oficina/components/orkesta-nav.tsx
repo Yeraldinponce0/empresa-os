@@ -97,7 +97,15 @@ const GROUPS: NavGroup[] = [
   }
 ];
 
-export function OrkestaNav({ active, orgName = 'Yelizz' }: { active: string; orgName?: string }) {
+export function OrkestaNav({
+  active,
+  orgName = 'Yelizz',
+  readOnly = false
+}: {
+  active: string;
+  orgName?: string;
+  readOnly?: boolean;
+}) {
   return (
     <nav className='nav'>
       <div className='logo'>
@@ -114,14 +122,24 @@ export function OrkestaNav({ active, orgName = 'Yelizz' }: { active: string; org
         {GROUPS.map((g) => (
           <div key={g.label}>
             <div className='navgroup'>{g.label}</div>
-            {g.items.map((it) => (
-              <Link key={it.key} href={it.href} className={active === it.key ? 'active' : ''}>
-                <svg className='ic' viewBox='0 0 24 24'>
-                  {ICONS[it.key]}
-                </svg>
-                {it.label}
-              </Link>
-            ))}
+            {g.items.map((it) =>
+              readOnly ? (
+                // Solo lectura: no navega (evita rutas con login).
+                <a key={it.key} className={active === it.key ? 'active' : ''}>
+                  <svg className='ic' viewBox='0 0 24 24'>
+                    {ICONS[it.key]}
+                  </svg>
+                  {it.label}
+                </a>
+              ) : (
+                <Link key={it.key} href={it.href} className={active === it.key ? 'active' : ''}>
+                  <svg className='ic' viewBox='0 0 24 24'>
+                    {ICONS[it.key]}
+                  </svg>
+                  {it.label}
+                </Link>
+              )
+            )}
           </div>
         ))}
       </div>

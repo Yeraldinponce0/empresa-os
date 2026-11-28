@@ -22,7 +22,7 @@ function initials(name: string) {
   return name.slice(0, 2).toUpperCase();
 }
 
-export function Office({ data }: { data: OfficeData }) {
+export function Office({ data, readOnly = false }: { data: OfficeData; readOnly?: boolean }) {
   const [navOpen, setNavOpen] = useState(true);
   const [rightOpen, setRightOpen] = useState(true);
 
@@ -143,7 +143,7 @@ export function Office({ data }: { data: OfficeData }) {
       {/* ---------- Cuerpo ---------- */}
       <div className='main'>
         {/* Nav agrupada (compartida con las demás pantallas) */}
-        <OrkestaNav active='oficina' orgName={data.organizationName} />
+        <OrkestaNav active='oficina' orgName={data.organizationName} readOnly={readOnly} />
 
         {/* Centro */}
         <div className='center'>
@@ -156,6 +156,7 @@ export function Office({ data }: { data: OfficeData }) {
             orquestacion={ORQUESTACION_POS}
             resultados={RESULTADOS_POS}
             results={results}
+            readOnly={readOnly}
           />
         </div>
 
@@ -174,14 +175,23 @@ export function Office({ data }: { data: OfficeData }) {
             {data.pendingApprovals.length === 0 ? (
               <div className='empty'>Nada pendiente de aprobar. 🎉</div>
             ) : (
-              data.pendingApprovals.map((a) => (
-                <div className='appr' key={a.approvalId}>
-                  <Link href={`/tareas/${a.taskId}`} className='txt appr-link'>
-                    <b>{a.agentName}</b> · {a.summary}
-                  </Link>
-                  <ApprovalActions approvalId={a.approvalId} taskId={a.taskId} />
-                </div>
-              ))
+              data.pendingApprovals.map((a) =>
+                readOnly ? (
+                  <div className='appr' key={a.approvalId}>
+                    <div className='txt'>
+                      <b>{a.agentName}</b> · {a.summary}
+                    </div>
+                    <span className='ro-tag'>Espera aprobación</span>
+                  </div>
+                ) : (
+                  <div className='appr' key={a.approvalId}>
+                    <Link href={`/tareas/${a.taskId}`} className='txt appr-link'>
+                      <b>{a.agentName}</b> · {a.summary}
+                    </Link>
+                    <ApprovalActions approvalId={a.approvalId} taskId={a.taskId} />
+                  </div>
+                )
+              )
             )}
           </div>
 
@@ -190,29 +200,40 @@ export function Office({ data }: { data: OfficeData }) {
             <div className='ph'>
               <h3>Agentes</h3>
             </div>
-            {data.agents.map((ag) => (
-              <Link className='ag ag-link' key={ag.id} href={`/tareas?agente=${ag.id}`}>
-                <span
-                  className='avatar'
-                  style={{ width: 28, height: 28, background: '#2A2440', color: '#B9B2FA' }}
-                >
-                  {initials(ag.name)}
-                </span>
-                <div>
-                  <div className='nm'>{ag.name}</div>
-                  <div className='rl'>{ag.role ?? '—'}</div>
-                </div>
-                <span className='stt' style={{ color: TONE_VAR[ag.status.tone] }}>
+            {data.agents.map((ag) => {
+              const inner = (
+                <>
                   <span
-                    className={
-                      ag.status.tone === 'green' || ag.status.tone === 'amber' ? 'dot pz' : 'dot'
-                    }
-                    style={{ background: TONE_VAR[ag.status.tone] }}
-                  />
-                  {ag.status.label}
-                </span>
-              </Link>
-            ))}
+                    className='avatar'
+                    style={{ width: 28, height: 28, background: '#2A2440', color: '#B9B2FA' }}
+                  >
+                    {initials(ag.name)}
+                  </span>
+                  <div>
+                    <div className='nm'>{ag.name}</div>
+                    <div className='rl'>{ag.role ?? '—'}</div>
+                  </div>
+                  <span className='stt' style={{ color: TONE_VAR[ag.status.tone] }}>
+                    <span
+                      className={
+                        ag.status.tone === 'green' || ag.status.tone === 'amber' ? 'dot pz' : 'dot'
+                      }
+                      style={{ background: TONE_VAR[ag.status.tone] }}
+                    />
+                    {ag.status.label}
+                  </span>
+                </>
+              );
+              return readOnly ? (
+                <div className='ag' key={ag.id}>
+                  {inner}
+                </div>
+              ) : (
+                <Link className='ag ag-link' key={ag.id} href={`/tareas?agente=${ag.id}`}>
+                  {inner}
+                </Link>
+              );
+            })}
           </div>
 
           {/* Pulso en vivo (eventos reales) */}
@@ -236,8 +257,8 @@ export function Office({ data }: { data: OfficeData }) {
             )}
           </div>
 
-          {/* Chat contextual (placeholder) */}
-          <OfficeChat />
+          {/* Chat contextual (placeholder) — oculto en modo solo lectura */}
+          {!readOnly && <OfficeChat />}
         </aside>
       </div>
     </div>

@@ -846,6 +846,16 @@
 .office .appr-link:hover {
   color: var(--vtext);
 }
+.office .ro-tag {
+  display: inline-block;
+  margin-top: 4px;
+  font-size: 10.5px;
+  color: var(--amber);
+  border: 1px solid rgba(230, 180, 92, 0.4);
+  border-radius: 6px;
+  padding: 2px 8px;
+  white-space: nowrap;
+}
 
 /* ---------- Pantalla Tareas (lista) ---------- */
 .office .tareas {

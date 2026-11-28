@@ -33,12 +33,14 @@ export function OfficeStage({
   zones,
   orquestacion,
   resultados,
-  results
+  results,
+  readOnly = false
 }: {
   zones: Zone[];
   orquestacion: { x: number; y: number };
   resultados: { x: number; y: number };
   results: ResultItem[];
+  readOnly?: boolean;
 }) {
   const [view, setView] = useState<'oficina' | '2d' | 'lista'>('oficina');
   const [time, setTime] = useState('');
@@ -101,7 +103,7 @@ export function OfficeStage({
               />
             );
             const key = z.departmentId ?? z.name;
-            if (z.agentId) {
+            if (z.agentId && !readOnly) {
               return (
                 <Link
                   className='ov zone zone-link'
